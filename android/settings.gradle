@@ -1,0 +1,3 @@
+rootProject.name = 'yin17BdApp'
+
+include ':app'
