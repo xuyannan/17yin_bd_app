@@ -7,7 +7,7 @@ export function fetchMerchant(params) {
     dispatch({
       type: types.FETCH_MERCHANTS
     })
-    fetch('http://192.168.130.155:3000/api/v1/deliveryman/orders', {
+    fetch('http://192.168.131.59:3000/api/v1/deliveryman/orders', {
       headers: {
         'Authorization': 'Basic ' + params.token
       }

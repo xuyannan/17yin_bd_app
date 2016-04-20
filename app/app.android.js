@@ -46,6 +46,15 @@ export default class App extends React.Component {
         user: JSON.parse(res)
       })
     }).done();
+    store.subscribe(function () {
+      if (store.getState().user === null) {
+        try {
+          _this.setState({
+            user: null
+          })
+        } catch(e) {}
+      }
+    });
   };
 
   render () {
@@ -103,7 +112,7 @@ export default class App extends React.Component {
   loginSuccess (user) {
     // let user = Object.assign({}, res);
     let authority = {
-      deliveryman: true
+      bd: true
     };
     if (user && authority[user.state]) {
       AsyncStorage.setItem(Constants.STORAGE_USER_KEY, JSON.stringify(user))

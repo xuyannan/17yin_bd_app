@@ -1,3 +1,4 @@
 rootProject.name = 'yin17BdApp'
 
-include ':app'
+include ':app', ':baidumapkit'
+project(':baidumapkit').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-baidumapkit-17yin')

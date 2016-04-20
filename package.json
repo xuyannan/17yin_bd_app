@@ -9,6 +9,8 @@
     "base-64": "^0.1.0",
     "react-native": "^0.20.0",
     "react-native-17yin": "^1.0.1",
+    "react-native-baidumapkey-17yin": "0.0.1",
+    "react-native-baidumapkit-17yin": "^1.0.0",
     "react-native-communications": "^1.0.1",
     "react-native-gifted-listview": "0.0.14",
     "react-native-navbar": "^1.4.2",
