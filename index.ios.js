@@ -11,10 +11,14 @@ import React, {
   View
 } from 'react-native';
 
+import Yin17 from 'react-native-17yin';
+var {Order} = Yin17;
+
 class yin17BdApp extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Order/>
         <Text style={styles.welcome}>
           Welcome to React Native!
         </Text>

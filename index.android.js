@@ -11,20 +11,19 @@ import React, {
   View
 } from 'react-native';
 
+import App from './app/app.android';
+import {Provider} from 'react-redux';
+import configureStore from './store/configure-store';
+
+const store = configureStore();
+
 class yin17BdApp extends Component {
+
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
+      <Provider store={store}>
+        <App/>
+      </Provider>
     );
   }
 }
