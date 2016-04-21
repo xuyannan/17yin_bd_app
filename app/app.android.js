@@ -24,6 +24,8 @@ import userAction from '../actions/user';
 
 import MerchantList from '../components/merchant/merchant.android';
 import Setting from '../components/setting/setting.android';
+import SearchOrder from '../components/order/searchOrder.android';
+import dismissKeyboard from 'react-native-dismiss-keyboard';
 
 const store = configureStore();
 
@@ -67,18 +69,18 @@ export default class App extends React.Component {
             renderIcon={() => <Icon name="university" size={16}/>}
             renderSelectedIcon={() => <Icon name="university" size={16} color="#1182fe"/>}
             badgeText=""
-            onPress={() => this.setState({ selectedTab: 'merchants' })}>
+            onPress={() => {dismissKeyboard(); this.setState({ selectedTab: 'merchants' })}}>
             <MerchantList token={this.state.user.token} />
           </TabNavigator.Item>
 
           <TabNavigator.Item
             selected={this.state.selectedTab === 'orders'}
-            title="新增订单"
-            renderIcon={() => <Icon name="files-o" size={16}/>}
-            renderSelectedIcon={() => <Icon name="files-o" size={16} color="#1182fe"/>}
+            title="订单查询"
+            renderIcon={() => <Icon name="search" size={16}/>}
+            renderSelectedIcon={() => <Icon name="search" size={16} color="#1182fe"/>}
             badgeText=""
-            onPress={() => this.setState({ selectedTab: 'orders' })}>
-            <View><Text>history</Text></View>
+            onPress={() => {dismissKeyboard(); this.setState({ selectedTab: 'orders' })}}>
+            <SearchOrder token={this.state.user.token}/>
           </TabNavigator.Item>
 
           <TabNavigator.Item
@@ -87,7 +89,7 @@ export default class App extends React.Component {
             renderIcon={() => <Icon name="list-ol" size={16}/>}
             renderSelectedIcon={() => <Icon name="list-ol" size={16} color="#1182fe"/>}
             badgeText=""
-            onPress={() => this.setState({ selectedTab: 'balance' })}>
+            onPress={() => {dismissKeyboard(); this.setState({ selectedTab: 'balance' })}}>
             <View><Text>balance</Text></View>
           </TabNavigator.Item>
 
@@ -97,7 +99,7 @@ export default class App extends React.Component {
             renderIcon={() => <Icon name="cogs" size={16}/>}
             renderSelectedIcon={() => <Icon name="cogs" size={16} color="#1182fe"/>}
             badgeText=""
-            onPress={() => this.setState({ selectedTab: 'account' })}>
+            onPress={() => {dismissKeyboard(); this.setState({ selectedTab: 'account' })}}>
             <Setting/>
           </TabNavigator.Item>
         </TabNavigator>

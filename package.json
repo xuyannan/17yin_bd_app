@@ -12,6 +12,7 @@
     "react-native-baidumapkey-17yin": "0.0.1",
     "react-native-baidumapkit-17yin": "^1.0.0",
     "react-native-communications": "^1.0.1",
+    "react-native-dismiss-keyboard": "0.0.3",
     "react-native-gifted-listview": "0.0.14",
     "react-native-navbar": "^1.4.2",
     "react-native-tab-navigator": "^0.2.18",

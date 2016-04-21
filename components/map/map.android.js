@@ -175,7 +175,7 @@ export default class Map extends React.Component {
 
   saveCoodinate () {
     // let _this = this;
-    let url = `http://192.168.131.59:3000/api/v1/users/${this.props.merchant.id}/coordinate`;
+    let url = `http://192.168.130.42:3000/api/v1/users/${this.props.merchant.id}/coordinate`;
     let _submit = function () {
       this.setState({processing: true});
       fetch(url, {
