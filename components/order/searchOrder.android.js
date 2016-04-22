@@ -15,24 +15,46 @@ import React, {
 
 import Yin17 from 'react-native-17yin';
 import NavigationBar from 'react-native-navbar';
+import Config from '../../config';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import yinStyles from '../../style/style';
+let api = new Yin17.Api(Config.API_ROOT);
 
 export default class SearchOrder extends React.Component {
   state = {
     searchResult: new ListView.DataSource({
         rowHasChanged: (row1, row2) => {row1 !== row2}
       }),
-    searchResultObject: null
+    searchResultObject: [],
+    loading: false
+  };
+  renderResult () {
+    if (this.state.loading) {
+      return (
+        <View style={yinStyles.centered}><Text><Icon name="refresh" size={16}/> 加载中，请稍候</Text></View>
+      )
+    } else if(this.state.searchResultObject.length === 0) {
+      return (
+        <View style={yinStyles.centered}><Text><Icon name="search" size={16}/> 没有找到结果</Text></View>
+      )
+    } else {
+      return (
+        <ListView style={{padding: 8}}
+          dataSource={this.state.searchResult}
+          renderRow={this.renderOrder.bind(this)}/>
+      )
+    }
   };
   render () {
     return (
-      <View>
+      <View style={yinStyles.container}>
         <NavigationBar
           title={{title: '订单查询'}}
           rightButton={{title: ''}} />
         <TextInput
           onChangeText={(text) => {
             this.setState({query: text});
-            if (text.length >= 4) {
+            if (text.length >= 10) {
               this.searchOrders();
             }
           }}
@@ -40,9 +62,7 @@ export default class SearchOrder extends React.Component {
           placeholder="输入完整订单号查询"
           placeholderTextColor="#ccc"
         ></TextInput>
-        <ListView style={{padding: 8}}
-          dataSource={this.state.searchResult}
-          renderRow={this.renderOrder.bind(this)}/>
+        {this.renderResult.apply(this)}
       </View>
     )
   };
@@ -54,33 +74,25 @@ export default class SearchOrder extends React.Component {
   };
 
   searchOrders () {
-    fetch(`http://192.168.130.42:3000/api/v1/search/orders?per=10000&page=1`, {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Basic ' + this.props.token,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-      ,
-      body: JSON.stringify({
-        q: this.state.query
-      })
-    }).then((response) => (response.json()))
-    .then((responseData) => {
-      this.setState({loading: false});
-      console.log(responseData);
-      responseData.data.map(function(order) {
-        console.log(order.id);
-      })
-      if (typeof(responseData.data) === 'undefined') {
-        Alert.alert('提示','加载出错')
-      } else {
+    this.setState({
+      loading: true
+    });
+    api.searchOrder({
+      query: this.state.query,
+      token: this.props.token,
+      onSuccess: (res) => {
         this.setState({
-          searchResult: (new ListView.DataSource({ rowHasChanged: (row1, row2) => {row1 !== row2} })).cloneWithRows(responseData.data),
-          searchResultObject: responseData.data.length > 0 ? responseData.data : null
+          searchResult: (new ListView.DataSource({ rowHasChanged: (row1, row2) => {row1 !== row2} })).cloneWithRows(res),
+          searchResultObject: res,
+          loading: false
         })
-
+      },
+      onError: (res) => {
+        Alert.alert('提示','加载出错');
+        this.setState({
+          loading: false
+        });
       }
-    }).done()
+    });
   }
 };

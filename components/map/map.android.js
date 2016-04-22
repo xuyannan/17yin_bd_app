@@ -10,8 +10,12 @@ import React, {
 } from 'react-native';
 
 import BaiduMap from 'react-native-baidumapkit-17yin';
-
+import Yin17 from 'react-native-17yin';
+import Config from '../../config';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
+let api = new Yin17.Api(Config.API_ROOT);
+
 export default class Map extends React.Component {
   state =  {
     markers: [],
@@ -174,57 +178,39 @@ export default class Map extends React.Component {
   };
 
   saveCoodinate () {
-    // let _this = this;
-    let url = `http://192.168.130.42:3000/api/v1/users/${this.props.merchant.id}/coordinate`;
     let _submit = function () {
+      console.log('submit coordinate');
       this.setState({processing: true});
-      fetch(url, {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Basic ' + this.props['token'],
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-          ,
-          body: JSON.stringify({
-            lng: this.state.newCoordinate.lng,
-            lat: this.state.newCoordinate.lat,
-            provider: 'baidu',
-            axis: 'bd09ll'
-          })
-        })
-        .then((response) => (response.json()))
-        .then(responseData => {
-          this.setState({processing: false});
-          if (responseData.message) {
-            Alert.alert('提示', responseData.message + '，请确认是否进行了标注？')
-          } else {
-            let _markers = this.statue.markers;
-            this.setState({
-              // marker: _marker,
-              markers: _markers.map(function(marker) {
-                if (marker.merchantId === this.state.merchant.id) {
-                  marker.coordinate = this.state.newCoordinate;
-                }
-                return marker;
-              }),
-              marking: false
-            });
-            let merchant = Object.assign({}, this.props.merchant);
-            merchant.coordinate = responseData.data;
-            this.setState({
-              merchant: _merchant
-            });
+      api.updateMerchantCooridate({
+        merchant: this.props.merchant,
+        coordinate: this.state.newCoordinate,
+        token: this.props.token,
+        onError: (res) => {
+          Alert.alert('提示', (res && res.message ? res.message + ',': '') + '请确认是否进行了标注？')
+        },
+        onSuccess: (res) => {
+          let _markers = this.state.markers;
+          let _this = this;
+          this.setState({
+            // marker: _marker,
+            markers: _markers.map(function(marker) {
+              if (marker.merchantId === _this.state.merchant.id) {
+                marker.coordinate = _this.state.newCoordinate;
+              }
+              return marker;
+            }),
+            marking: false
+          });
+          let merchant = Object.assign({}, this.props.merchant);
+          merchant.coordinate = res;
+          this.setState({
+            merchant: merchant
+          });
 
-            // store.dispatch({type: 'UPDATE_MERCHANT', merchant: _merchant});
-            Alert.alert('提示', '标注成功');
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          this.setState({processing: false, marking: false});
-        })
-        .done();
+          // store.dispatch({type: 'UPDATE_MERCHANT', merchant: _merchant});
+          Alert.alert('提示', '标注成功');
+        }
+      });
     };
 
 

@@ -14,6 +14,9 @@ import React, {
 import GiftedListView from 'react-native-gifted-listview';
 import Yin17 from 'react-native-17yin';
 import NavigationBar from 'react-native-navbar';
+import Config from '../../config';
+
+let api = new Yin17.Api(Config.API_ROOT);
 
 export default class OrderList extends React.Component {
   state = {
@@ -33,25 +36,19 @@ export default class OrderList extends React.Component {
   };
 
   loadOrders (page = 1, callback, options) {
-    fetch(`http://192.168.130.42:3000/api/v1/bd/merchants/${this.props.merchant.id}/orders.json?per=20&page=${page}`, {
-      headers: {
-        'Authorization': 'Basic ' + this.props.token
-      }
-    }).then((response) => (response.json()))
-    .then((responseData) => {
-      this.setState({loading: false});
-      console.log('Orders: ', responseData.data.orders);
-      if (typeof(responseData.data) === 'undefined') {
-        Alert.alert('提示','加载出错')
-      } else {
-        // _this.setState({
-        //   tasks: responseData.data.tasks
-        // })
-        callback(responseData.data.orders, {
-          allLoaded: responseData.data.orders.length === 0
+    api.loadOrdersByMerchant({
+      token: this.props.token,
+      page: page,
+      merchant: this.props.merchant,
+      onSuccess: (res) => {
+        callback(res.orders, {
+          allLoaded: res.orders.length === 0
         })
+      },
+      onError: (res) => {
+        Alert.alert('提示','加载出错');
       }
-    }).done()
+    });
   };
 
   renderOrder (order) {

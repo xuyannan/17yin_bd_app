@@ -25,6 +25,7 @@ import userAction from '../actions/user';
 import MerchantList from '../components/merchant/merchant.android';
 import Setting from '../components/setting/setting.android';
 import SearchOrder from '../components/order/searchOrder.android';
+import Rank from '../components/rank/rank.android';
 import dismissKeyboard from 'react-native-dismiss-keyboard';
 
 const store = configureStore();
@@ -85,12 +86,12 @@ export default class App extends React.Component {
 
           <TabNavigator.Item
             selected={this.state.selectedTab === 'balance'}
-            title="绩效分"
+            title="绩效排行"
             renderIcon={() => <Icon name="list-ol" size={16}/>}
             renderSelectedIcon={() => <Icon name="list-ol" size={16} color="#1182fe"/>}
             badgeText=""
             onPress={() => {dismissKeyboard(); this.setState({ selectedTab: 'balance' })}}>
-            <View><Text>balance</Text></View>
+            <Rank token={this.state.user.token}/>
           </TabNavigator.Item>
 
           <TabNavigator.Item

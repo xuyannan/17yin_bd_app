@@ -19,6 +19,10 @@ import OrderList from '../order/orderList.android';
 import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import dismissKeyboard from 'react-native-dismiss-keyboard';
+import Config from '../../config';
+import yinStyles from '../../style/style';
+
+let api = new Yin17.Api(Config.API_ROOT);
 
 export default class MerchantList extends React.Component {
   state = {
@@ -36,7 +40,7 @@ export default class MerchantList extends React.Component {
       switch (route.id) {
         case 'merchantList':
           return (
-            <View style={{flex: 1}}>
+            <View style={yinStyles.container}>
               <NavigationBar
                 title={{title: '我的商户'}}
                 rightButton={{title: ''}} />
@@ -109,51 +113,35 @@ export default class MerchantList extends React.Component {
   };
 
   searchMerchants () {
-    fetch(`http://192.168.130.42:3000/api/v1/search/users?per=10000&page=1`, {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Basic ' + this.props.token,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-      ,
-      body: JSON.stringify({
-        q: this.state.query
-      })
-    }).then((response) => (response.json()))
-    .then((responseData) => {
-      this.setState({loading: false});
-      responseData.data.map(function(merchant) {
-        console.log(merchant.name);
-      })
-      if (typeof(responseData.data) === 'undefined') {
-        Alert.alert('提示','加载出错')
-      } else {
+    api.searchMerchants({
+      query: this.state.query,
+      token: this.props.token,
+      onSuccess: (res) => {
         this.setState({
-          searchResult: (new ListView.DataSource({ rowHasChanged: (row1, row2) => {row1 !== row2} })).cloneWithRows(responseData.data),
-          searchResultObject: responseData.data.length > 0 ? responseData.data : null
+          searchResult: (new ListView.DataSource({ rowHasChanged: (row1, row2) => {row1 !== row2} })).cloneWithRows(res),
+          searchResultObject: res.length > 0 ? res : null
         })
-
+      },
+      onError: () => {
+        Alert.alert('提示','加载出错');
       }
-    }).done()
+    });
   };
 
   loadAllMerchants (page = 1, callback, options) {
-    fetch(`http://192.168.130.42:3000/api/v1/bd/merchants.json?per=20&page=${page}`, {
-      headers: {
-        'Authorization': 'Basic ' + this.props.token
-      }
-    }).then((response) => (response.json()))
-    .then((responseData) => {
-      this.setState({loading: false});
-      if (typeof(responseData.data) === 'undefined') {
-        Alert.alert('提示','加载出错')
-      } else {
-        callback(responseData.data, {
-          allLoaded: responseData.data === 0
+    api.loadMerchants({
+      token: this.props.token,
+      page: page,
+      onSuccess: (res) => {
+        callback(res, {
+          allLoaded: res.length === 0
         })
+      },
+      onError: () => {
+        Alert.alert('提示','加载出错')
       }
-    }).done()
+    });
+
   };
 
   onNamePress (merchant) {
