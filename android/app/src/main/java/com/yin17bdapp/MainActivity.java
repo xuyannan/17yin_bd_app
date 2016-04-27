@@ -72,11 +72,10 @@ public class MainActivity extends ReactActivity {
    */
     @Override
     protected List<ReactPackage> getPackages() {
-      BaiduMapReactPackage baiduMapReactPackage = new BaiduMapReactPackage(this);
-      baiduMapReactPackage.setLocationClient(mLocationClient);
+        BaiduMapReactPackage baiduMapReactPackage = new BaiduMapReactPackage(this);
+        baiduMapReactPackage.setLocationClient(mLocationClient);
       return Arrays.<ReactPackage>asList(
-        new MainReactPackage(),
-        baiduMapReactPackage
+        new MainReactPackage()
       );
     }
 }
