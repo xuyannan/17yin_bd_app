@@ -27,6 +27,7 @@ import MerchantList from '../components/merchant/merchant.android';
 import Setting from '../components/setting/setting.android';
 import SearchOrder from '../components/order/searchOrder.android';
 import Rank from '../components/rank/rank.android';
+import OrderList from '../components/order/orderList.android';
 import dismissKeyboard from 'react-native-dismiss-keyboard';
 import * as actions from '../actions/user';
 import { connect } from 'react-redux';
@@ -77,6 +78,16 @@ class App extends React.Component {
             badgeText=""
             onPress={() => {dismissKeyboard(); this.setState({ selectedTab: 'merchants' })}}>
             <MerchantList token={user.user.token} />
+          </TabNavigator.Item>
+
+          <TabNavigator.Item
+            selected={this.state.selectedTab === 'orderList'}
+            title="商户订单"
+            renderIcon={() => <Icon name="files-o" size={16}/>}
+            renderSelectedIcon={() => <Icon name="files-o" size={16} color="#1182fe"/>}
+            badgeText=""
+            onPress={() => {dismissKeyboard(); this.setState({ selectedTab: 'orderList' })}}>
+            <OrderList token={user.user.token}/>
           </TabNavigator.Item>
 
           <TabNavigator.Item

@@ -15,7 +15,7 @@ import React, {
 import GiftedListView from 'react-native-gifted-listview';
 import Yin17 from 'react-native-17yin';
 import Map from '../map/map.android';
-import OrderList from '../order/orderList.android';
+import OrderList from '../order/orderListByMerchant.android';
 import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import dismissKeyboard from 'react-native-dismiss-keyboard';

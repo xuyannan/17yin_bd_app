@@ -29,21 +29,21 @@ export default class OrderList extends React.Component {
   };
 
   componentDidMount () {
-    // BackAndroid.addEventListener('hardwareBackPress', () => {
-    //   this.props.navigator.pop();
-    //   return true;
-    // });
+    BackAndroid.addEventListener('hardwareBackPress', () => {
+      this.props.navigator.pop();
+      return true;
+    });
   };
 
   loadOrders (page = 1, callback, options) {
-    api.loadMyOrders({
+    api.loadOrdersByMerchant({
       token: this.props.token,
       page: page,
       merchant: this.props.merchant,
-      onSuccess: (orders) => {
+      onSuccess: (res) => {
         // console.log('orders:', orders);
-        callback(orders, {
-          allLoaded: orders.length === 0
+        callback(res.orders, {
+          allLoaded: res.orders.length === 0
         })
       },
       onError: (res) => {
@@ -63,7 +63,7 @@ export default class OrderList extends React.Component {
     return (
       <View style={{flex: 1}}>
         <NavigationBar
-          title={{title: '商户订单'}}
+          title={{title: this.props.merchant.name}}
           rightButton={{title: ''}} />
         <View style={{flex: 1, padding: 8}}>
           <GiftedListView
