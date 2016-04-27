@@ -44,7 +44,6 @@ export default class Rank extends React.Component {
       date: date,
       onSuccess: (res) => {
         res = res.sort(function(s1, s2) {
-          console.log('sort', s1.score.score );
           return s2.score.score - s1.score.score;
         })
         this.setState({

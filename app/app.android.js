@@ -6,7 +6,8 @@ import React, {
   StyleSheet,
   Text,
   View,
-  AsyncStorage
+  AsyncStorage,
+  PropTypes
 } from 'react-native';
 
 import Yin17 from 'react-native-17yin';
@@ -27,10 +28,12 @@ import Setting from '../components/setting/setting.android';
 import SearchOrder from '../components/order/searchOrder.android';
 import Rank from '../components/rank/rank.android';
 import dismissKeyboard from 'react-native-dismiss-keyboard';
+import * as actions from '../actions/user';
+import { connect } from 'react-redux';
 
 const store = configureStore();
 
-export default class App extends React.Component {
+class App extends React.Component {
 
   state = {
     user: null,
@@ -38,30 +41,32 @@ export default class App extends React.Component {
     selectedTab: 'merchants',
   };
 
-  // static authority = {
-  //   deliveryman: true
-  // };
-
   componentDidMount () {
+    const { dispatch } = this.props;
     let _this = this;
     AsyncStorage.getItem(Constants.STORAGE_USER_KEY).then(function (res) {
-      _this.setState({
-        user: JSON.parse(res)
-      })
-    }).done();
-    store.subscribe(function () {
-      if (store.getState().user === null) {
-        try {
-          _this.setState({
-            user: null
-          })
-        } catch(e) {}
+      console.log('local user: ', res);
+      if (res !== null) {
+        dispatch(actions.userLoginDone({
+          user: JSON.parse(res)
+        }))
       }
-    });
+
+    }).done();
+  };
+
+  componentWillReceiveProps(nextProps) {
+    console.log('nextProps', nextProps);
   };
 
   render () {
-    if (this.state.user !== null) {
+    const { dispatch, user } = this.props;
+    console.log('app user', user);
+    // this.setState({
+    //   user: user
+    // });
+    console.log('user', user);
+    if (user.user !== null) {
       return (
         <TabNavigator ref="tabbar">
           <TabNavigator.Item
@@ -71,7 +76,7 @@ export default class App extends React.Component {
             renderSelectedIcon={() => <Icon name="university" size={16} color="#1182fe"/>}
             badgeText=""
             onPress={() => {dismissKeyboard(); this.setState({ selectedTab: 'merchants' })}}>
-            <MerchantList token={this.state.user.token} />
+            <MerchantList token={user.user.token} />
           </TabNavigator.Item>
 
           <TabNavigator.Item
@@ -81,7 +86,7 @@ export default class App extends React.Component {
             renderSelectedIcon={() => <Icon name="search" size={16} color="#1182fe"/>}
             badgeText=""
             onPress={() => {dismissKeyboard(); this.setState({ selectedTab: 'orders' })}}>
-            <SearchOrder token={this.state.user.token}/>
+            <SearchOrder token={user.user.token}/>
           </TabNavigator.Item>
 
           <TabNavigator.Item
@@ -91,7 +96,7 @@ export default class App extends React.Component {
             renderSelectedIcon={() => <Icon name="list-ol" size={16} color="#1182fe"/>}
             badgeText=""
             onPress={() => {dismissKeyboard(); this.setState({ selectedTab: 'balance' })}}>
-            <Rank token={this.state.user.token}/>
+            <Rank token={user.user.token}/>
           </TabNavigator.Item>
 
           <TabNavigator.Item
@@ -101,45 +106,54 @@ export default class App extends React.Component {
             renderSelectedIcon={() => <Icon name="cogs" size={16} color="#1182fe"/>}
             badgeText=""
             onPress={() => {dismissKeyboard(); this.setState({ selectedTab: 'account' })}}>
-            <Setting/>
+            <Setting user={user.user}/>
           </TabNavigator.Item>
         </TabNavigator>
       )
     } else {
       return (
-        <LoginContainer loginSuccess={this.loginSuccess.bind(this)} loginFailed={this.loginFailed.bind(this)}/>
+        <LoginContainer/>
       )
     }
   };
 
-  loginSuccess (user) {
-    // let user = Object.assign({}, res);
-    let authority = {
-      bd: true
-    };
-    if (user && authority[user.state]) {
-      AsyncStorage.setItem(Constants.STORAGE_USER_KEY, JSON.stringify(user))
-
-      // let a =userAction.userLoginDone({
-      //   user: user
-      // })
-      // a();
-      // console.log('REDUX', store.getState());
-      store.dispatch({type: types.USER_LOGIN_DONE, user: user});
-      // console.log('REDUX', store.getState().user.user);
-      this.setState({
-        user: user
-      })
-    } else {
-      Alert.alert('提示', 'sorry，您暂时没有访问权限');
-    }
+  login () {
+    const { dispatch } = this.props;
+    dispatch(actions.login({
+      mobile: '13331279132',
+      password: '111111'
+    }))
   };
 
-  loginFailed (res) {
-    if (res.message) {
-      Alert.alert('提示', res.message);
-    } else {
-      Alert.alert('提示', '登录失败');
-    }
+  // loginSuccess (user) {
+  //   let authority = {
+  //     bd: true
+  //   };
+  //   if (user && authority[user.state]) {
+  //     store.dispatch(actions.userLoginDone({
+  //       user: user
+  //     }));
+  //   } else {
+  //     Alert.alert('提示', 'sorry，您暂时没有访问权限');
+  //   }
+  // };
+  //
+  // loginFailed (res) {
+  //   if (res.message) {
+  //     Alert.alert('提示', res.message);
+  //   } else {
+  //     Alert.alert('提示', '登录失败');
+  //   }
+  // }
+};
+
+App.propTypes = {
+  user: PropTypes.object.isRequired
+};
+
+function select(state) {
+  return {
+    user: state.user
   }
-}
+};
+export default connect(select)(App);

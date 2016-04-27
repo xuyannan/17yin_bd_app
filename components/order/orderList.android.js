@@ -41,6 +41,7 @@ export default class OrderList extends React.Component {
       page: page,
       merchant: this.props.merchant,
       onSuccess: (res) => {
+        console.log(res.orders);
         callback(res.orders, {
           allLoaded: res.orders.length === 0
         })

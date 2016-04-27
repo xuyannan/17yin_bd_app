@@ -1,6 +1,6 @@
 'use strict'
 import React from 'react-native';
-import {Login} from 'react-native-17yin';
+import Login from '../components/login/login.android';
 import {connect} from 'react-redux';
 
 class LoginContainer extends React.Component{
@@ -16,6 +16,6 @@ let  mapStateToProps = function(state){
   return {
     user
   }
-}
+};
 
 export default connect(mapStateToProps)(LoginContainer);
