@@ -75,7 +75,8 @@ public class MainActivity extends ReactActivity {
         BaiduMapReactPackage baiduMapReactPackage = new BaiduMapReactPackage(this);
         baiduMapReactPackage.setLocationClient(mLocationClient);
       return Arrays.<ReactPackage>asList(
-        new MainReactPackage()
+        new MainReactPackage(),
+        baiduMapReactPackage
       );
     }
 }
