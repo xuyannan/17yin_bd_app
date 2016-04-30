@@ -18,6 +18,8 @@ import NavigationBar from 'react-native-navbar';
 import Config from '../../config';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import yinStyles from '../../style/style';
+import dismissKeyboard from 'react-native-dismiss-keyboard';
+import OrderListByMerchant from './orderListByMerchant';
 let api = new Yin17.Api(Config.API_ROOT);
 
 export default class SearchOrder extends React.Component {
@@ -46,30 +48,61 @@ export default class SearchOrder extends React.Component {
     }
   };
   render () {
+    let naviRenderScene = function (route, navigator) {
+      switch (route.id) {
+        case 'orderList':
+          return (
+            <View style={yinStyles.container}>
+              <NavigationBar
+                title={{title: '订单查询'}}
+                rightButton={{title: ''}} />
+              <TextInput
+                onChangeText={(text) => {
+                  this.setState({query: text});
+                  if (text.length >= 10) {
+                    this.searchOrders();
+                  }
+                }}
+                value={this.state.query}
+                placeholder="输入完整订单号查询"
+                placeholderTextColor="#ccc"
+              ></TextInput>
+              {this.renderResult.apply(this)}
+            </View>
+          )
+          break;
+        case 'ordersByMerchant':
+          return (
+            <OrderListByMerchant merchant={route.merchant} token={route.token} navigator={route.navigator}/>
+          )
+          break;
+
+        default:
+
+      }
+    };
     return (
-      <View style={yinStyles.container}>
-        <NavigationBar
-          title={{title: '订单查询'}}
-          rightButton={{title: ''}} />
-        <TextInput
-          onChangeText={(text) => {
-            this.setState({query: text});
-            if (text.length >= 10) {
-              this.searchOrders();
-            }
-          }}
-          value={this.state.query}
-          placeholder="输入完整订单号查询"
-          placeholderTextColor="#ccc"
-        ></TextInput>
-        {this.renderResult.apply(this)}
-      </View>
-    )
+      <Navigator ref="navigator"
+        initialRoute={{id: 'orderList', index: 0}}
+        renderScene={(route, navigator) => naviRenderScene.apply(this, [route, navigator])}
+      />
+    );
+  };
+
+  onOrderNamePress(order) {
+    dismissKeyboard();
+    let navigator = this.refs.navigator;
+    navigator.push({
+      id: 'ordersByMerchant',
+      merchant: order.user,
+      token: this.props.token,
+      navigator: navigator
+    })
   };
 
   renderOrder (order) {
     return (
-      <Yin17.Order order={order}/>
+      <Yin17.Order order={order} onNamePress={() => this.onOrderNamePress(order)}/>
     )
   };
 
